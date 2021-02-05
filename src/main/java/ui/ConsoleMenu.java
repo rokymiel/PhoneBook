@@ -22,6 +22,14 @@ public class ConsoleMenu implements Menuable {
         this.output = output;
     }
 
+    /**
+     * Производит выбор элемента из переданного массив
+     *
+     * @param header    заголовок
+     * @param footer    подзаголовок
+     * @param menuItems массив меню
+     * @return индекс выбранного элемента начиная с 1
+     */
     @Override
     public int select(String header, String footer, String[] menuItems) {
         String menu = getMenuString(menuItems);
@@ -30,54 +38,92 @@ public class ConsoleMenu implements Menuable {
         return readIntNumber(footer, num -> num >= 1 && num <= menuItems.length);
     }
 
+    /**
+     * Считывает строку
+     *
+     * @param message сообщеие
+     * @return считанная строка
+     */
     @Override
     public String read(String message) {
-        output.show(message);
-        return in.nextLine();
+        return read(message, res -> !res.isEmpty());
     }
 
+    /**
+     * Считывает строку по переданному формату
+     *
+     * @param message сообщение
+     * @param format  формат строки
+     * @return считанная строка
+     */
     @Override
     public String read(String message, String format) {
-        output.show(message);
-        String res = in.nextLine();
-        while (!Pattern.matches(format, res)) {
-            output.show(WRONG_FORMAT);
-            res = in.nextLine();
-        }
-        return res;
+        return read(message, res -> Pattern.matches(format, res));
     }
 
+    /**
+     * Считывает массив строк
+     *
+     * @param message сообщение
+     * @return считанный массив строк
+     */
     @Override
     public String[] readArray(String message) {
         return privateReadArray(message, null);
     }
 
+    /**
+     * Считывает массив строк с переданным форматом
+     *
+     * @param message сообщение
+     * @param format  формат строк
+     * @return считанный массив строк
+     */
     @Override
     public String[] readArray(String message, String format) {
         return privateReadArray(message, format);
     }
 
+    /**
+     * Считывает целочисленное число
+     *
+     * @param message сообщение
+     * @return считанное число
+     */
     @Override
     public int readInt(String message) {
         return readIntNumber(message, num -> true);
     }
 
+    /**
+     * Считывает целочисленное число
+     *
+     * @param message сообщение
+     * @param min     минимальная граниа (вклбчена)
+     * @param max     максимальная граница (включено)
+     * @return считанное число
+     */
     @Override
     public int readInt(String message, int min, int max) {
         return readIntNumber(message, num -> num >= min && num <= max);
     }
 
+    /**
+     * Считывает положительное число
+     *
+     * @param message сообщение
+     * @return считанное число
+     */
     @Override
     public int readIntPositive(String message) {
         return readIntNumber(message, num -> num > 0);
     }
 
     /**
-     * Чтение целочисленного числа с консоли
+     * Чтение числа
      *
-     * @param message сообщение для пользователя при вводе
-     * @param min     наименьшее число
-     * @param max     наибольшее число
+     * @param message   сообщение для пользователя при вводе
+     * @param predicate предикат для проверки введенного число
      * @return введенное пользователем чсило
      */
     private int readIntNumber(String message, Predicate<Integer> predicate) {
@@ -98,6 +144,13 @@ public class ConsoleMenu implements Menuable {
         }
     }
 
+    /**
+     * Считывает массив строк с переданным форматом
+     *
+     * @param message сообщение
+     * @param format  формат строк
+     * @return считанный массив строк
+     */
     private String[] privateReadArray(String message, String format) {
         output.show(message);
         int arrayLength = readIntPositive(ASK_FOR_NUM_OF_ELEMENTS);
@@ -118,12 +171,29 @@ public class ConsoleMenu implements Menuable {
      * @param items массив элементов меню
      * @return строка с меню
      */
-    private static String getMenuString(String[] items) {
+    private String getMenuString(String[] items) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < items.length - 1; i++) {
             stringBuilder.append("\t").append(i + 1).append(". ").append(items[i]).append("\n");
         }
         stringBuilder.append("\t").append(items.length).append(". ").append(items[items.length - 1]);
         return stringBuilder.toString();
+    }
+
+    /**
+     * Считывает строку по переданной проверке
+     *
+     * @param message   сообщение
+     * @param predicate проверка ввода
+     * @return считанная строка
+     */
+    private String read(String message, Predicate<String> predicate) {
+        output.show(message);
+        String res = in.nextLine();
+        while (!predicate.test(res)) {
+            output.show(WRONG_FORMAT);
+            res = in.nextLine();
+        }
+        return res;
     }
 }

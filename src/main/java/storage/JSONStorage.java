@@ -37,6 +37,11 @@ public class JSONStorage<T> implements Storable<T> {
         }
     }
 
+    /**
+     * Подгружает данные
+     *
+     * @throws IOException если возникла ошибка при загрузке данных
+     */
     private void loadData() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(dataPath))) {
             String inputLine;
@@ -50,6 +55,11 @@ public class JSONStorage<T> implements Storable<T> {
         logger.ifPresent(logger -> logger.log(Level.INFO, "Loaded " + items.size() + " items"));
     }
 
+    /**
+     * Сохранение изменениц
+     *
+     * @throws IOException если возникла ошибка при сохранении изменений
+     */
     private void saveChanges() throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(dataPath))) {
             for (T item : items) {
@@ -63,11 +73,23 @@ public class JSONStorage<T> implements Storable<T> {
         logger.ifPresent(logger -> logger.log(Level.INFO, "Saved " + items.size() + " items"));
     }
 
+    /**
+     * Возвращает массив сохраненных данных
+     *
+     * @return массив сохраненных данных
+     */
     @Override
     public T[] getAll() {
         return items.toArray((T[]) java.lang.reflect.Array.newInstance(type, 0));
     }
 
+    /**
+     * Добавляет новый элемент
+     *
+     * @param item новый элемент
+     * @return false если элемент уже присудствует в базе
+     * @throws IOException если возникла ошибка при сохранении изменений
+     */
     @Override
     public boolean add(T item) throws IOException {
         if (items.add(item)) {
@@ -79,6 +101,13 @@ public class JSONStorage<T> implements Storable<T> {
 
     }
 
+    /**
+     * Удаляет элемент
+     *
+     * @param item элемент для удаления
+     * @return false если элемента для удаления нет в базе
+     * @throws IOException если возникла ошибка при сохранении изменений
+     */
     @Override
     public boolean tryRemove(T item) throws IOException {
         if (items.remove(item)) {
@@ -89,11 +118,24 @@ public class JSONStorage<T> implements Storable<T> {
         return false;
     }
 
+    /**
+     * Фильтрует объектры по предикату
+     *
+     * @param predicate фильтр
+     * @return массив отфильтрованных объектов
+     */
     @Override
     public T[] getAllWhere(Predicate<T> predicate) {
         return items.stream().filter(predicate).collect(Collectors.toList()).toArray((T[]) java.lang.reflect.Array.newInstance(type, 0));
     }
 
+    /**
+     * Группирует объекты по переданной функции группировки
+     *
+     * @param function функция группировки
+     * @param <K>      Тип ключа группы
+     * @return сгруппированные объекты
+     */
     @Override
     public <K> Map<K, List<T>> getGrouped(Function<? super T, ? extends K> function) {
         return items.stream().collect(Collectors.groupingBy(function));

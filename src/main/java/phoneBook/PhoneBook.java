@@ -21,6 +21,9 @@ public class PhoneBook {
 
     }
 
+    /**
+     * Открывает телефонную книгу
+     */
     public void open() {
         int menuItem = menu.select(MenuMessages.MENU, MenuMessages.CHOOSE_ELEMENT, MenuMessages.MAIN_MENU);
         while (menuItem != MenuMessages.MAIN_MENU.length) {
@@ -51,14 +54,25 @@ public class PhoneBook {
         }
     }
 
+    /**
+     * Показывает контакты
+     *
+     * @param contacts массик контактов
+     */
     private void showContacts(Contact[] contacts) {
         output.showArray(contacts, MenuMessages.EMPTY_CONTACTS_LIST);
     }
 
+    /**
+     * Показывает все контакты
+     */
     private void showAllContacts() {
         showContacts(contactService.getAllContacts());
     }
 
+    /**
+     * Создает новый контакт
+     */
     private void newContact() {
         String name = menu.read(MenuMessages.ENTER_NAME);
         String surname = menu.read(MenuMessages.ENTER_SURNAME);
@@ -75,6 +89,9 @@ public class PhoneBook {
         }
     }
 
+    /**
+     * Удаляет контакт
+     */
     private void removeContact() {
         int index = menu.select(MenuMessages.CONTACTS_LIST, MenuMessages.CHOOSE_CONTACT, Arrays.stream(contactService.getAllContacts()).map(Contact::toString).toArray(String[]::new));
         try {
@@ -84,20 +101,32 @@ public class PhoneBook {
         }
     }
 
+    /**
+     * Группирует контакты по городу
+     */
     private void group() {
         output.showGroups(contactService.getGroupedByCity());
     }
 
+    /**
+     * Поиск по ФИО
+     */
     private void searchByName() {
         String fullName = menu.read(MenuMessages.ENTER_FULL_NAME);
         showContacts(contactService.getContactsWithName(fullName));
     }
 
+    /**
+     * Поиск по телефону
+     */
     private void searchByPhone() {
         String address = menu.read(MenuMessages.ENTER_ADDRESS);
         showContacts(contactService.getContactsWithPhone(address));
     }
 
+    /**
+     * Поиск по дате
+     */
     private void searchByDate() {
         String date = menu.read(MenuMessages.ENTER_DATE);
         showContacts(contactService.getContactsWithDate(date));
