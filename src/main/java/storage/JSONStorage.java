@@ -112,7 +112,7 @@ public class JSONStorage<T> implements Storable<T> {
     public boolean tryRemove(T item) throws IOException {
         if (items.remove(item)) {
             saveChanges();
-            logger.ifPresent(logger -> logger.log(Level.INFO, "Removed new item"));
+            logger.ifPresent(logger -> logger.log(Level.INFO, "Removed item"));
             return true;
         }
         return false;
